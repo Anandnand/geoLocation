@@ -16,13 +16,32 @@ function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
   } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
+    document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
   }
 }
 
 function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude + 
-  "<br>Longitude: " + position.coords.longitude;
+  const latitude = position.coords.latitude;
+  const longitude = position.coords.longitude;
+
+  // Show latitude and longitude
+  document.getElementById("location").innerHTML = "Latitude: " + latitude + 
+    "<br>Longitude: " + longitude;
+
+  // Use Nominatim API to get the place name from coordinates
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+  // Fetch data from Nominatim API
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const placeName = data.display_name; // Get the address information
+      document.getElementById("location").innerHTML += 
+        `<br>Location: ${placeName}`;
+    })
+    .catch(error => {
+      console.error("Error fetching location:", error);
+    });
 }
 </script>
 
